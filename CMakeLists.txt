@@ -8,10 +8,10 @@ add_library(BasicLogger INTERFACE)
 target_include_directories(BasicLogger INTERFACE include/)
 
 # Name of logging macros
-set(LoggingMacro "blLog")
-set(LoggingInfoMacro "blInfo")
-set(LoggingWarnMacro "blWarn")
-set(LoggingErrorMacro "blError")
+set(LoggingMacro "blLog" CACHE STRING "The name of the Logging Macro")
+set(LoggingInfoMacro "blInfo" CACHE STRING "The name of the Logging Info Macro")
+set(LoggingWarnMacro "blWarn" CACHE STRING "The name of the Logging Warn Macro")
+set(LoggingErrorMacro "blError" CACHE STRING "The name of the Logging Erro rMacro")
 
 # Logging Macros
 target_compile_definitions(BasicLogger INTERFACE ${LoggingMacro}=BASIC_LOGGER_LOG_FUNCTION)
