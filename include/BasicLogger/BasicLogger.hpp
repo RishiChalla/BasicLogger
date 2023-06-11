@@ -38,6 +38,7 @@
 #define BASIC_LOGGER_FILE_FORMAT "{:%F---%H-%M-%S.log}" // Format of file names, given to std::format with zoned time
 #endif
 
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <string_view>
