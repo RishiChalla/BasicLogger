@@ -63,6 +63,7 @@
 #define BASIC_LOGGER_INFO_FUNCTION(x) BasicLogger::info<decltype(x)>(__LINE__, __BASIC_LOGGER_FILENAME__, x)
 #define BASIC_LOGGER_WARN_FUNCTION(x) BasicLogger::warn<decltype(x)>(__LINE__, __BASIC_LOGGER_FILENAME__, x)
 #define BASIC_LOGGER_ERROR_FUNCTION(x) BasicLogger::error<decltype(x)>(__LINE__, __BASIC_LOGGER_FILENAME__, x)
+#define BASIC_LOGGER_ASSERT_FUNCTION(x, y) BasicLogger::assert<decltype(y)>(x, __LINE__, __BASIC_LOGGER_FILENAME__, y)
 
 /**
  * Basic Logger Class, in most cases you want to use macros to log rather than calling this class directly.
@@ -99,8 +100,7 @@ public:
 	 * @tparam T Type of logged message
 	 * @param message The message
 	 */
-	template <typename T>
-	static void log(const T& message) {
+	template <typename T> static void log(const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -141,8 +141,7 @@ public:
 	 * @param filename The file name printed from
 	 * @param message The message
 	 */
-	template <typename T>
-	static void log(int lineNumber, std::string_view filename, const T& message) {
+	template <typename T> static void log(int lineNumber, std::string_view filename, const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -185,8 +184,7 @@ public:
 	 * @tparam T Type of logged message
 	 * @param message The message
 	 */
-	template <typename T>
-	static void info(const T& message) {
+	template <typename T> static void info(const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -227,8 +225,7 @@ public:
 	 * @param filename The file name printed from
 	 * @param message The message
 	 */
-	template <typename T>
-	static void info(int lineNumber, std::string_view filename, const T& message) {
+	template <typename T> static void info(int lineNumber, std::string_view filename, const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -271,8 +268,7 @@ public:
 	 * @tparam T Type of logged message
 	 * @param message The message
 	 */
-	template <typename T>
-	static void warn(const T& message) {
+	template <typename T> static void warn(const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -313,8 +309,7 @@ public:
 	 * @param filename The file name printed from
 	 * @param message The message
 	 */
-	template <typename T>
-	static void warn(int lineNumber, std::string_view filename, const T& message) {
+	template <typename T> static void warn(int lineNumber, std::string_view filename, const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -357,8 +352,7 @@ public:
 	 * @tparam T Type of logged message
 	 * @param message The message
 	 */
-	template <typename T>
-	static void error(const T& message) {
+	template <typename T> static void error(const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -399,8 +393,7 @@ public:
 	 * @param filename The file name printed from
 	 * @param message The message
 	 */
-	template <typename T>
-	static void error(int lineNumber, std::string_view filename, const T& message) {
+	template <typename T> static void error(int lineNumber, std::string_view filename, const T& message) {
 #if defined(BASIC_LOGGER_ENABLE_CONSOLE) || defined(BASIC_LOGGER_ENABLE_FILE)
 		auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		std::string formattedTime = std::format("{:%I:%M %p}", std::chrono::zoned_time{std::chrono::current_zone(), timestamp});
@@ -435,5 +428,35 @@ public:
 #ifdef BASIC_LOGGER_ENABLE_FILE
 		logFile << fileMessageStr << std::endl;
 #endif
+	}
+
+	/**
+	 * Asserts a condition or statement being true/truthy
+	 * 
+	 * @tparam T The type of message logged if the assertion should fail
+	 * @param assertion The assertion which to check,
+	 * @param message The message to log if the assertion should fail
+	 */
+	template <typename T> static void assert(bool assertion, const T& message) {
+		if (assertion) return;
+		std::stringstream stream;
+		stream << "Assertion Failed - " << message;
+		error(stream.str());
+	}
+
+	/**
+	 * Asserts a condition or statement being true/truthy
+	 * 
+	 * @tparam T The type of message logged if the assertion should fail
+	 * @param assertion The assertion which to check,
+	 * @param lineNumber The line number this assertion was called from
+	 * @param filename The filename this assertion was called from
+	 * @param message The message to log if the assertion should fail
+	 */
+	template <typename T> static void assert(bool assertion, int lineNumber, std::string_view filename, const T& message) {
+		if (assertion) return;
+		std::stringstream stream;
+		stream << "Assertion Failed - " << message;
+		error(lineNumber, filename, stream.str());
 	}
 };

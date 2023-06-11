@@ -26,12 +26,14 @@ int main() {
 	blInfo("Information!");
 	blWarn("Warning!");
 	blError("Error!");
+	blAssert(false, "Test Assertion Failed!");
 
 	// The below prints without the line number or file name
 	BasicLogger::log("Hello World!");
 	BasicLogger::info("Information!");
 	BasicLogger::warn("Warning!");
 	BasicLogger::error("Error!");
+	BasicLogger::assert(false, "Test Assertion Failed!");
 }
 
 ```
@@ -44,6 +46,7 @@ set(LoggingMacro "blLog")
 set(LoggingInfoMacro "blInfo")
 set(LoggingWarnMacro "blWarn")
 set(LoggingErrorMacro "blError")
+set(LoggingAssertMacro "blAssert")
 ```
 
 The following macro definitions are available as options:
